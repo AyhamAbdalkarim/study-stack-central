@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -120,13 +119,6 @@ const Courses = () => {
     });
   };
 
-  const handleViewCourse = (courseId: string) => {
-    toast({
-      title: "View Course Resources",
-      description: `Opening resources for course ${courseId}`,
-    });
-  };
-
   const handleAddCourse = () => {
     toast({
       title: "Add New Course",
@@ -243,7 +235,6 @@ const Courses = () => {
                 course={course}
                 onEdit={handleEditCourse}
                 onDelete={handleDeleteCourse}
-                onView={handleViewCourse}
               />
             ))}
           </div>

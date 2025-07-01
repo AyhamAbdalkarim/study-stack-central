@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +30,12 @@ interface CourseCardProps {
 
 const CourseCard = ({ course, onEdit, onDelete, onView }: CourseCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+
+  const handleViewCourse = () => {
+    navigate(`/resources/${course.id}`);
+    onView?.(course.id);
+  };
 
   return (
     <Card 
@@ -63,7 +70,7 @@ const CourseCard = ({ course, onEdit, onDelete, onView }: CourseCardProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onView?.(course.id)}>
+              <DropdownMenuItem onClick={handleViewCourse}>
                 <ExternalLink className="w-4 h-4 mr-2" />
                 View Resources
               </DropdownMenuItem>
@@ -104,7 +111,7 @@ const CourseCard = ({ course, onEdit, onDelete, onView }: CourseCardProps) => {
         )}
         
         <Button 
-          onClick={() => onView?.(course.id)}
+          onClick={handleViewCourse}
           className="w-full mt-4 group-hover:bg-primary group-hover:text-primary-foreground transition-all"
           variant="outline"
         >
