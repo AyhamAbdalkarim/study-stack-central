@@ -6,76 +6,128 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Navbar from '@/components/Navbar';
-import ResourceCard from '@/components/ResourceCard';
-import { ArrowLeft, Plus, Search, Filter } from 'lucide-react';
+import { ResourceCard } from '@/components/Cards';
+import { 
+  ArrowRight, 
+  BookOpen, 
+  Plus, 
+  Search, 
+  Filter 
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+// Sample data
+const sampleCourses = [
+  {
+    id: '1',
+    name: 'Advanced React Development',
+    description: 'Master React with hooks, context, and advanced patterns for building scalable applications.',
+    hours: 24,
+    category: 'Programming',
+    progress: 65
+  },
+  {
+    id: '2',
+    name: 'Cloud Security Fundamentals',
+    description: 'Learn essential cloud security principles and best practices for AWS, Azure, and GCP.',
+    hours: 18,
+    category: 'Cybersecurity',
+    progress: 30
+  },
+  {
+    id: '3',
+    name: 'Network Architecture Design',
+    description: 'Design and implement robust network infrastructures for enterprise environments.',
+    hours: 32,
+    category: 'Networking',
+    progress: 0
+  },
+  {
+    id: '4',
+    name: 'AWS Solutions Architect',
+    description: 'Comprehensive guide to designing distributed applications and systems on AWS.',
+    hours: 40,
+    category: 'Cloud Computing',
+    progress: 85
+  },
+  {
+    id: '5',
+    name: 'UI/UX Design Principles',
+    description: 'Learn user interface and user experience design fundamentals for digital products.',
+    hours: 16,
+    category: 'Design',
+    progress: 45
+  },
+  {
+    id: '6',
+    name: 'Project Management Essentials',
+    description: 'Master project management methodologies including Agile, Scrum, and traditional approaches.',
+    hours: 20,
+    category: 'Business Administration',
+    progress: 10
+  },
+  {
+    id: '7',
+    name: 'Python for Data Science',
+    description: 'Learn Python programming with focus on data analysis, visualization, and machine learning.',
+    hours: 35,
+    category: 'Programming',
+    progress: 0
+  },
+  {
+    id: '8',
+    name: 'Ethical Hacking Fundamentals',
+    description: 'Introduction to penetration testing, vulnerability assessment, and ethical hacking techniques.',
+    hours: 28,
+    category: 'Cybersecurity',
+    progress: 20
+  }
+];
+
+const sampleResources = [
+  {
+    id: '1',
+    title: 'React Hooks Deep Dive',
+    description: 'Complete guide to React hooks with practical examples and best practices.',
+    type: 'pdf' as const,
+    url: 'https://example.com/react-hooks.pdf',
+    completed: true
+  },
+  {
+    id: '2',
+    title: 'State Management Patterns',
+    description: 'Video tutorial covering Redux, Context API, and Zustand for state management.',
+    type: 'video' as const,
+    url: 'https://example.com/state-management',
+    completed: false
+  },
+  {
+    id: '3',
+    title: 'React Documentation',
+    description: 'Official React documentation with latest updates and examples.',
+    type: 'link' as const,
+    url: 'https://react.dev',
+    completed: true
+  },
+  {
+    id: '4',
+    title: 'Project Source Code',
+    description: 'Download the complete source code for all course projects.',
+    type: 'download' as const,
+    url: 'https://example.com/download/projects.zip',
+    completed: false
+  }
+];
+
+// Resources Page Component
 const Resources = () => {
   const { courseId } = useParams();
   const { toast } = useToast();
+  const [resources, setResources] = useState(sampleResources);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
 
-  // Sample course and resources data
-  const [course] = useState({
-    id: courseId || '1',
-    name: 'Advanced React Development',
-    description: 'Master React with hooks, context, and advanced patterns for building scalable applications.',
-    category: 'Programming',
-    hours: 24
-  });
-
-  const [resources] = useState([
-    {
-      id: '1',
-      title: 'React Hooks Complete Guide',
-      description: 'Comprehensive PDF guide covering all React hooks with practical examples and best practices.',
-      type: 'pdf' as const,
-      url: 'https://example.com/react-hooks-guide.pdf',
-      completed: true
-    },
-    {
-      id: '2',
-      title: 'Building Custom Hooks',
-      description: 'Video tutorial series on creating reusable custom hooks for common React patterns.',
-      type: 'video' as const,
-      url: 'https://example.com/custom-hooks-video',
-      completed: true
-    },
-    {
-      id: '3',
-      title: 'React Context API Documentation',
-      description: 'Official React documentation and examples for Context API usage.',
-      type: 'link' as const,
-      url: 'https://reactjs.org/docs/context.html',
-      completed: false
-    },
-    {
-      id: '4',
-      title: 'React Performance Optimization',
-      description: 'Downloadable checklist and tools for optimizing React application performance.',
-      type: 'download' as const,
-      url: 'https://example.com/performance-tools.zip',
-      completed: false
-    },
-    {
-      id: '5',
-      title: 'Advanced Patterns Workshop',
-      description: 'Interactive workshop materials covering advanced React patterns like render props and HOCs.',
-      type: 'pdf' as const,
-      url: 'https://example.com/advanced-patterns.pdf',
-      completed: false
-    },
-    {
-      id: '6',
-      title: 'State Management Solutions',
-      description: 'Comparison video of different state management solutions in React ecosystem.',
-      type: 'video' as const,
-      url: 'https://example.com/state-management-video',
-      completed: true
-    }
-  ]);
+  const course = sampleCourses.find(c => c.id === courseId);
 
   const resourceTypes = ['all', 'pdf', 'video', 'link', 'download'];
 
@@ -102,10 +154,11 @@ const Resources = () => {
   };
 
   const handleToggleComplete = (resourceId: string) => {
-    toast({
-      title: "Toggle Completion",
-      description: `Resource ${resourceId} completion status would be updated when backend is connected.`,
-    });
+    setResources(prev => prev.map(resource => 
+      resource.id === resourceId 
+        ? { ...resource, completed: !resource.completed }
+        : resource
+    ));
   };
 
   const handleAddResource = () => {
@@ -115,32 +168,48 @@ const Resources = () => {
     });
   };
 
-  const completedCount = resources.filter(r => r.completed).length;
-  const completionPercentage = Math.round((completedCount / resources.length) * 100);
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Card className="text-center py-12">
+            <CardContent>
+              <h1 className="text-2xl font-bold text-foreground mb-4">Course Not Found</h1>
+              <p className="text-muted-foreground mb-6">The course you're looking for doesn't exist.</p>
+              <Button asChild>
+                <Link to="/courses">Back to Courses</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-2 mb-4">
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/courses" className="flex items-center gap-2">
-                <ArrowLeft className="w-4 h-4" />
+              <Link to="/courses">
+                <ArrowRight className="w-4 h-4 rotate-180 mr-2" />
                 Back to Courses
               </Link>
             </Button>
-            <Badge variant="secondary">{course.category}</Badge>
           </div>
           
           <div className="flex justify-between items-start mb-6">
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">{course.name}</h1>
-              <p className="text-lg text-muted-foreground max-w-3xl">
-                {course.description}
-              </p>
+              <p className="text-lg text-muted-foreground mb-4">{course.description}</p>
+              <div className="flex items-center gap-4">
+                <Badge variant="secondary">{course.category}</Badge>
+                <div className="flex items-center text-muted-foreground">
+                  <BookOpen className="w-4 h-4 mr-1" />
+                  {course.hours} hours
+                </div>
+              </div>
             </div>
             <Button onClick={handleAddResource} className="flex items-center gap-2">
               <Plus className="w-4 h-4" />
@@ -148,31 +217,6 @@ const Resources = () => {
             </Button>
           </div>
 
-          {/* Course Progress */}
-          <Card className="mb-6">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm text-muted-foreground">Course Progress</div>
-                  <div className="text-2xl font-bold text-foreground">
-                    {completedCount}/{resources.length} Resources Completed
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-primary">{completionPercentage}%</div>
-                  <div className="text-sm text-muted-foreground">Complete</div>
-                </div>
-              </div>
-              <div className="w-full bg-secondary rounded-full h-2 mt-3">
-                <div 
-                  className="bg-gradient-to-r from-primary to-purple-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${completionPercentage}%` }}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Search and Filters */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -210,7 +254,6 @@ const Resources = () => {
           </Card>
         </div>
 
-        {/* Resource Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardContent className="p-4">
@@ -220,25 +263,28 @@ const Resources = () => {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-green-600">{completedCount}</div>
+              <div className="text-2xl font-bold text-foreground">{filteredResources.length}</div>
+              <div className="text-sm text-muted-foreground">Filtered Results</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-foreground">
+                {resources.filter(r => r.completed).length}
+              </div>
               <div className="text-sm text-muted-foreground">Completed</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-orange-600">{resources.length - completedCount}</div>
-              <div className="text-sm text-muted-foreground">Remaining</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="text-2xl font-bold text-foreground">{filteredResources.length}</div>
-              <div className="text-sm text-muted-foreground">Filtered Results</div>
+              <div className="text-2xl font-bold text-foreground">
+                {Math.round((resources.filter(r => r.completed).length / resources.length) * 100)}%
+              </div>
+              <div className="text-sm text-muted-foreground">Progress</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Resources Grid */}
         {filteredResources.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredResources.map((resource) => (
@@ -257,13 +303,10 @@ const Resources = () => {
               <div className="text-muted-foreground mb-4">
                 <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <h3 className="text-lg font-semibold mb-2">No resources found</h3>
-                <p>Try adjusting your search terms or filters</p>
+                <p>Try adjusting your search terms or add some resources</p>
               </div>
-              <Button variant="outline" onClick={() => {
-                setSearchTerm('');
-                setSelectedType('all');
-              }}>
-                Clear Filters
+              <Button onClick={handleAddResource}>
+                Add Resource
               </Button>
             </CardContent>
           </Card>
